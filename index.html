@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Noname game on pure JavaScript</title>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      :root {
+        scroll-behavior: smooth;
+      }
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 1.5;
+      width: 25%;
+      color: #2b465e;
+      background-color: #8ecc6d;
+      -webkit-text-size-adjust: 100%;
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 150%;
+      color: #33101f;
+      background-color: #def375;
+      background-clip: border-box;
+      background-size: 25%;
+      box-sizing: border-box;
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 20px;
+      background-color: #d3ef91;
+      background-size: 25%;
+    }
+
+  </style>
+  <link rel="stylesheet" href="/chatbot/chatbot.css">
+</head>
+
+<body>
+
+<h1>**Noname Game**</h1>
+
+<!-- chatbot__btn -->
+<div class="chatbot__btn">
+  <div class="chatbot__tooltip d-none">Lets go?</div>
+</div>
+
+<!-- FingerPrint JS -->
+<script src="/chatbot/fp2.js"></script>
+<!-- ChatBot JS -->
+<script src="/chatbot/chatbot.js"></script>
+
+
+<h2 id="current_date_time"></h2>
+
+<script type="text/javascript">
+
+  /* функция добавления ведущих нулей */
+  /* (если число меньше десяти, перед числом добавляем ноль) */
+  function zeroFirstFormat(value){
+    if (value < 10){
+      value='0'+value;
+    }
+    return value;
+  }
+
+  /* функция получения текущей даты и времени */
+  function date_time()
+  {
+    const current_datetime = new Date();
+    const day = zeroFirstFormat(current_datetime.getDate());
+    const month = zeroFirstFormat(current_datetime.getMonth() + 1);
+    const year = current_datetime.getFullYear();
+    const hours = zeroFirstFormat(current_datetime.getHours());
+    const minutes = zeroFirstFormat(current_datetime.getMinutes());
+    const seconds = zeroFirstFormat(current_datetime.getSeconds());
+
+    return day+"."+month+"."+year+" "+hours+":"+minutes+":"+seconds;
+  }
+
+  /* каждую секунду получаем текущую дату и время */
+  /* и вставляем значение в блок с id "current_date_time" */
+  setInterval(function () {
+    document.getElementById('current_date_time').innerHTML = date_time();
+  }, 1000);
+</script>
+
+<script>
+
+  // конфигурация чат-бота
+  const configChatbot = {};
+  // CSS-селектор кнопки, посредством которой будем вызывать окно диалога с чат-ботом
+  configChatbot.btn = '.chatbot__btn';
+  // ключ для хранения отпечатка браузера
+  configChatbot.key = 'fingerprint';
+  // реплики чат-бота
+  configChatbot.replicas = {
+    bot: {
+      0: { content: ['Hi, wanderer!', 'It is our pleasure to welcome you!', 'Would you mind telling as which characters you would pick?'], human: [0, 1, 2] },
+      1: { content: ['That\'s fine!', 'So, and what should I call you?'], human: [3] },
+      2: { content: 'What is your name?', human: [16] },
+      3: { content: ['The dragon is holding your princess captive.', 'The only way to save her is to act now.', 'Are you going to do anything?'], human: [4, 5, 6] },
+      4: { content: '{{name}}, Это очень глупо без снаряжения бросаться на дракона. GAME OVER!!', human: [7] },
+      5: { content: ['Отлично!!', 'Ты во всём вооружении стоишь у логова дракона.', 'Что ты будешь делать?'], human:[9, 10, 11] },
+      6: { content: '{{name}}, Это, конечно, классно пить с друзьями пиво, но ты не выполнил свою миссию. GAME OVER!!', human: [7] },
+      7: { content: '{{name}}, Дракон тебя увидел и съел! GAME OVER!!', human: [7] },
+      8: { content: '{{name}}, Дракон выпил больше, а ты пошёл на закуску! GAME OVER!!', human: [7] },
+      9: { content: '{{name}}, Ты победил! Теперь принцесса твоя!', human: [7] },
+      10: { content: 'What is your name?', human: [12] },
+      11: { content: '{{name}}, Тебя похитил дракон. Ты сидишь в высокой башне. Что ты будешь делать?', human: [13, 14, 15] },
+      12: { content: 'Волосы долго растут, дракон проголодался и тебя съел! GAME OVER!!', human: [7] },
+      13: { content: 'Своими криками ты устала дракона и он тебя съел! GAME OVER!!', human: [7] },
+      14: { content: 'Ура!! Ты дождалась своего принца! GAME OVER!!', human: [7] },
+      15: { content: '{{name}}, Ты украл принцессу и посадил её в высокую башню. Что ты будешь делать?', human: [17, 18, 19] },
+      16: { content: '{{name}}, Принцесса была тощая ты подавился костями и сдох! GAME OVER!!', human: [7] },
+      17: { content: '{{name}}, Пока ты её откармливал, пришёл принц и тебя убил! GAME OVER!!', human: [7] },
+      18: { content: 'Отлично! {{name}}, Ты победил принца и наелся!! GAME OVER!!', human: [7] },
+    },
+    human: {
+      0: { content: 'Prince.', bot: 1 },
+      1: { content: 'Princess.', bot: 10 },
+      2: { content: 'Dragon', bot: 2 },
+      3: { content: '', bot: 3, name: `name` },
+      4: { content: 'I\'ll drop everything and chase after the princess!', bot: 4 },
+      5: { content: 'If that\'s the case, I\'ll pick up a sword, mount a horse, and ride to save the princess.', bot: 5 },
+      6: { content: 'That\'s actually not my favorite thing to do, I\'d rather go to a bar with friends to drink beer!', bot: 6},
+      7: { content: 'To the beginning!', bot: 0 },
+      8: { content: '', bot: 6, name: '' },
+      9: { content: 'Пока дракон не видит, быстро побегу спасать принцессу.', bot: 7 },
+      10: { content: 'Найду дракона и сражусь с ним!', bot: 9 },
+      11: { content: 'Найду дракона и выпью с ним пива! ', bot: 8},
+      12: { content: '', bot: 11, name: `name` },
+      13: { content: 'Выращу косу, по ней спущусь с башни и сбегу от дракона. ', bot: 12 },
+      14: { content: 'Буду кричать и звать на помощь!', bot: 13 },
+      15: { content: 'Буду сидеть тихо и ждать когда же принц спасёт меня.', bot: 14 },
+      16: { content: '', bot: 15, name: 'name' },
+      17: { content: 'Сразу съем и зачем я её садил в башню?', bot: 16 },
+      18: { content: 'Открмлю и съем!', bot: 17 },
+      19: { content: 'Дождусь принца и съем обоих!', bot: 18 },
+    }
+  }
+
+  // корневой элемент
+  configChatbot.root = SimpleChatbot.createTemplate();
+  // URL chatbot.php
+  configChatbot.url = '/chatbot/chatbot.php';
+  // создание SimpleChatbot
+  let chatbot = new SimpleChatbot(configChatbot);
+  // при клике по кнопке configChatbot.btn
+  document.querySelector(configChatbot.btn).onclick = function (e) {
+    this.classList.add('d-none');
+    const $tooltip = this.querySelector('.chatbot__tooltip');
+    if ($tooltip) {
+      $tooltip.classList.add('d-none');
+    }
+    configChatbot.root.classList.toggle('chatbot_hidden');
+    chatbot.init();
+  };
+
+  // добавление ключа для хранения отпечатка браузера в LocalStorage
+  let fingerprint = localStorage.getItem(configChatbot.key);
+  if (!fingerprint) {
+    Fingerprint2.get(function (components) {
+      fingerprint = Fingerprint2.x64hash128(components.map(function (pair) {
+        return pair.value
+      }).join(), 31)
+      localStorage.setItem(configChatbot.key, fingerprint)
+    });
+  }
+
+  // подсказка для кнопки
+  const $btn = document.querySelector(configChatbot.btn);
+  $btn.addEventListener('mouseover', function (e) {
+    const $tooltip = $btn.querySelector('.chatbot__tooltip');
+    if (!$tooltip.classList.contains('chatbot__tooltip_show')) {
+      $tooltip.classList.remove('d-none');
+      setTimeout(function () {
+        $tooltip.classList.add('chatbot__tooltip_show');
+      }, 0);
+    }
+  });
+  $btn.addEventListener('mouseout', function (e) {
+    const $tooltip = $btn.querySelector('.chatbot__tooltip');
+    if ($tooltip.classList.contains('chatbot__tooltip_show')) {
+      $tooltip.classList.remove('chatbot__tooltip_show');
+      setTimeout(function () {
+        $tooltip.classList.add('d-none');
+      }, 200);
+    }
+  });
+
+  setTimeout(function () {
+    const tooltip = document.querySelector('.chatbot__tooltip');
+    tooltip.classList.add('chatbot__tooltip_show');
+    setTimeout(function () {
+      tooltip.classList.remove('chatbot__tooltip_show');
+    }, 10000)
+  }, 10000);
+</script>
+
+</body>
+
+</html>
